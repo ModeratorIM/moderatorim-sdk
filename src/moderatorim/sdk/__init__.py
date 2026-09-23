@@ -38,6 +38,17 @@ from moderatorim.sdk.models import (
     list_of,
     ref,
 )
+from moderatorim.sdk.web import (
+    App,
+    Ctx,
+    Fragment,
+    Kind,
+    Page,
+    Redirect,
+    Rendered,
+    RouteDef,
+    redirect,
+)
 
 __all__ = [
     # models
@@ -66,5 +77,14 @@ __all__ = [
     "Manifest",
     "UnitType",
     "NavEntry",
-    # web facade (App, Ctx, Page, ...) is added in SDK P2.
+    # web facade (dispatch adapter lives in core)
+    "App",
+    "Ctx",
+    "Page",
+    "Fragment",
+    "Rendered",
+    "Redirect",
+    "redirect",
+    "RouteDef",
+    "Kind",
 ]
