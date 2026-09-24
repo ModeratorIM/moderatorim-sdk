@@ -9,6 +9,8 @@ All notable changes to `moderatorim-sdk` are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] — 2026-09-24
+
 ### Added
 - Initial contract kernel, extracted from the ModeratorIM core:
   - `models` — `Model`, `Field`/`FieldType` (+ `ref`/`enum`/`list_of`), `Extends`,
