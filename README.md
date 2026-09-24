@@ -1,11 +1,11 @@
-# moderatorim-sdk
+# ModeratorIM SDK
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.0.0-blue.svg)](https://github.com/ModeratorIM/moderatorim-sdk/releases)
 [![CI](https://github.com/ModeratorIM/moderatorim-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ModeratorIM/moderatorim-sdk/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 
-The **ModeratorIM app SDK** — the contract kernel you build ModeratorIM apps against.
+The **ModeratorIM SDK** — the contract kernel you build ModeratorIM apps against.
 
 > **Pre-1.0:** the contract surface is still moving. Expect breaking changes between `0.0.x`
 > releases until it stabilizes.
