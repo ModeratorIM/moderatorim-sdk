@@ -1,0 +1,29 @@
+# Configures GitHub's "Generate release notes" so every release reads the same. Notes are grouped
+# by the merged PRs' labels since the previous tag. Label PRs (bug / enhancement / breaking / docs /
+# chore) — see CONTRIBUTING — and the sections below fill themselves in.
+changelog:
+  exclude:
+    labels:
+      - duplicate
+      - invalid
+      - wontfix
+      - question
+  categories:
+    - title: ⚠️ Breaking changes
+      labels:
+        - breaking
+    - title: ✨ Features
+      labels:
+        - enhancement
+    - title: 🐛 Fixes
+      labels:
+        - bug
+    - title: 📚 Documentation
+      labels:
+        - documentation
+    - title: 🔧 Maintenance
+      labels:
+        - chore
+    - title: Other changes
+      labels:
+        - "*"

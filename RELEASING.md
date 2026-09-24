@@ -37,6 +37,30 @@ it — forcing a conscious version + CHANGELOG decision before merge. Combined w
    next version, update the CHANGELOG, and open a release PR — deferred until the first tagged
    release; until then, bump by hand per the table above.
 
+## Release notes — uniform format
+
+Every GitHub Release follows the same shape so a reader knows at a glance **what the release is**:
+
+```markdown
+## <one-line summary of what this release delivers>
+
+<1-3 sentences: the theme of the release and who it affects. For a pre-1.0 release, restate the
+"contract not yet stable - expect breaks in 0.x minors" note.>
+
+**Install:** `pip install git+https://github.com/ModeratorIM/moderatorim-sdk.git@vX.Y.Z`
+
+<!-- the categorized change list below is AUTO-GENERATED from merged PR labels; do not hand-write it -->
+```
+
+- The **top block (summary + theme + install)** is written by the releaser - it is the human "what
+  is this" that a changelog of PR titles can't convey.
+- The **change list below it is generated**, not hand-written: GitHub's "Generate release notes"
+  groups the merged PRs by label into the sections defined in
+  [`.github/release.yml`](.github/release.yml) (Breaking -> Features -> Fixes -> Documentation ->
+  Maintenance -> Other). This is why PRs must be labelled (see CONTRIBUTING).
+- Producing it: `gh release create vX.Y.Z --generate-notes --notes "<the top block>"` (the
+  `--generate-notes` appends the categorized list under your summary).
+
 ## Deprecating a public thing
 
 Follow the window promised in [VERSIONING.md](VERSIONING.md): mark it deprecated first (docstring +
