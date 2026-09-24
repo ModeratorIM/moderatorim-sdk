@@ -1,9 +1,9 @@
 """The ``DataStore`` port — persistence behind a narrow interface.
 
 A backend implements ``DataStore`` to provision tables and read/write records as plain dicts. The
-query surface is deliberately **narrow**: a fixed set of filter operators (no arbitrary query
-language), so every backend can implement it faithfully and no app can smuggle backend-specific
-query semantics through the port.
+query surface is deliberately narrow: a fixed set of filter operators (no arbitrary query language),
+so every backend implements it faithfully and no app can smuggle backend-specific query semantics
+through the port.
 """
 
 from __future__ import annotations
@@ -12,37 +12,29 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Protocol, runtime_checkable
 
-from moderatorim.sdk.models import ResolvedSchema
+from moderatorim.sdk.models.schema import ResolvedSchema
 
 # A record is a plain dict — the port never leaks an ORM row or a backend-native object.
 Record = dict[str, Any]
 
 
 class FilterOp(Enum):
-    """The fixed, backend-neutral filter-operator set.
+    """The fixed, backend-neutral filter-operator set. Compound queries AND a list of clauses."""
 
-    Kept intentionally small: every backend must implement all of these, and nothing else is
-    expressible through the port. Compound queries are built from a list of ``Filter`` clauses
-    ANDed together (see :meth:`DataStore.list`).
-    """
-
-    EQ = "eq"  # equal
-    NE = "ne"  # not equal
-    LT = "lt"  # less than
-    LTE = "lte"  # less than or equal
-    GT = "gt"  # greater than
-    GTE = "gte"  # greater than or equal
-    IN = "in"  # value in a list
+    EQ = "eq"
+    NE = "ne"
+    LT = "lt"
+    LTE = "lte"
+    GT = "gt"
+    GTE = "gte"
+    IN = "in"
     CONTAINS = "contains"  # substring / membership (backend maps to LIKE / array-contains)
 
 
 @dataclass(frozen=True, slots=True)
 class Filter:
-    """One filter clause: ``field <op> value``.
-
-    A list of these is ANDed together by :meth:`DataStore.list`. This is the *only* way to
-    express a query through the port — there is no raw-query escape hatch.
-    """
+    """One filter clause: ``field <op> value``. A list is ANDed by :meth:`DataStore.list`; there is
+    no raw-query escape hatch."""
 
     field: str
     op: FilterOp
@@ -55,9 +47,8 @@ class Filter:
             raise ValueError("FilterOp.IN requires a list/tuple/set value")
 
 
-# Type aliases used in method signatures below. Defined at module scope so annotations do not
-# resolve the name ``list`` inside the DataStore class, where the ``list`` METHOD shadows the
-# builtin under ``from __future__ import annotations`` (string-evaluated annotations).
+# Module-scope aliases so annotations don't resolve `list` inside the class (where the `list`
+# METHOD shadows the builtin under string-evaluated annotations).
 FilterList = list[Filter]
 RecordList = list[Record]
 
@@ -67,8 +58,7 @@ class DataStore(Protocol):
     """Persistence port. Backends implement this; the core depends only on it.
 
     Records are plain dicts keyed by field name. Every model carries an implicit ``id`` (str)
-    primary key and, when soft-delete is enabled, a ``deleted_at`` marker managed by the backend
-    — a soft-deleted record is excluded from ``get``/``list``/``count``.
+    primary key and, when soft-delete is enabled, a ``deleted_at`` marker managed by the backend.
     """
 
     async def ensure_table(self, schema: ResolvedSchema) -> None:

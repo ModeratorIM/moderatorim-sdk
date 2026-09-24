@@ -19,15 +19,14 @@ from moderatorim.sdk.bus import (
 from moderatorim.sdk.datastore import (
     DataStore,
     Filter,
+    FilterList,
     FilterOp,
     Record,
-)
-from moderatorim.sdk.manifest import (
-    Manifest,
-    NavEntry,
-    UnitType,
+    RecordList,
 )
 from moderatorim.sdk.models import (
+    ID_FIELD,
+    SOFT_DELETE_FIELD,
     Extends,
     Field,
     FieldType,
@@ -37,6 +36,11 @@ from moderatorim.sdk.models import (
     enum,
     list_of,
     ref,
+)
+from moderatorim.sdk.registry import (
+    Manifest,
+    NavEntry,
+    UnitType,
 )
 from moderatorim.sdk.web import (
     App,
@@ -58,14 +62,18 @@ __all__ = [
     "Extends",
     "ResolvedColumn",
     "ResolvedSchema",
+    "ID_FIELD",
+    "SOFT_DELETE_FIELD",
     "ref",
     "enum",
     "list_of",
     # datastore port
     "DataStore",
     "Filter",
+    "FilterList",
     "FilterOp",
     "Record",
+    "RecordList",
     # bus
     "Event",
     "EventKind",
