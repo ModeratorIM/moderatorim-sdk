@@ -1,0 +1,35 @@
+name: Feature request
+description: Propose an addition or change to the SDK contract.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The SDK is a versioned **contract** other packages build against, so changes are governed by
+        [VERSIONING.md](../blob/main/VERSIONING.md): an addition is a MINOR, a break is a MAJOR
+        (pre-1.0: MINOR). Keep this in mind below.
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What should change
+      description: The contract change you propose (a new type/field/enum member, a signature change…).
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: The app-author or core need this serves.
+    validations:
+      required: true
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: Is this a breaking change?
+      description: Does it remove/rename/retype an existing public thing, or tighten validation?
+      options:
+        - "No — purely additive (backward compatible)"
+        - "Yes — it changes or removes existing behavior"
+        - "Not sure"
+    validations:
+      required: true

@@ -12,6 +12,23 @@ build against (`from moderatorim.sdk import Manifest, App, Ctx, Page, Model, ...
 - Be respectful — this project follows a [Code of Conduct](CODE_OF_CONDUCT.md).
 - Report security issues **privately**, never in a public issue — see [SECURITY.md](SECURITY.md).
 
+## Filing issues
+
+Use the **issue templates** (Bug report / Feature request) — blank issues are disabled. Guidelines:
+
+- **One concern per issue.** A bug and a feature are two issues.
+- **Label by type:** `bug`, `enhancement` (a feature/contract addition), `documentation`, `chore`.
+  Add **`breaking`** when the change removes/renames/retypes a public thing or tightens validation —
+  that label signals a MAJOR (pre-1.0: MINOR) bump per [VERSIONING.md](VERSIONING.md).
+- **Milestones = target releases.** Open issues are grouped by the release they'll ship in
+  (`0.1.0`, later `0.2.0`, …). The **`1.0.0`** milestone is the *stability gate* — file
+  "must-be-true-before-the-API-is-stable" issues there, not a fixed next-step.
+- **Security** → never a public issue; use the private channel in [SECURITY.md](SECURITY.md).
+- **Questions** → the project discussions, not an issue.
+
+> Issues are the **public tracker** (bugs, requests, coordination). Detailed internal design lives
+> in the maintainers' own planning docs, not in issues — keep issues focused and outward-facing.
+
 ## What belongs here (and what does NOT)
 
 This package is **contracts only** — declarations, no runtime:

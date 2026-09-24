@@ -1,0 +1,40 @@
+name: Bug report
+description: Something in the SDK contract behaves incorrectly.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. This repo is the **contract kernel** (`moderatorim.sdk`) — declarations
+        only. If the problem is in the *running app* (auth, a backend, the wizard), file it on the
+        **core** repo instead. **Do not report security issues here** — see
+        [SECURITY.md](../blob/main/SECURITY.md).
+  - type: input
+    id: version
+    attributes:
+      label: SDK version
+      description: The `moderatorim-sdk` version (or git commit) you observed this on.
+      placeholder: "0.1.0 / commit abc123"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did the SDK do?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: A minimal snippet importing from `moderatorim.sdk` that shows the problem.
+      render: python
+    validations:
+      required: true
