@@ -17,7 +17,11 @@ class Model:
     """Base class for a declared model.
 
     Subclasses set:
-      * ``table`` — app-namespaced table name (``<app>_<name>``), lowercase snake_case.
+      * ``table`` — the FULL physical table name, MANDATORY and prefixed with the owning unit's
+        name (``<unit>_<name>``, lowercase snake_case, e.g. ``admin_post``). You DECLARE the full
+        name — the framework does NOT generate or rewrite it, so the name you write is the name in
+        the database (a raw query or ``ref`` never diverges from the declaration). Core validates at
+        boot that the prefix matches the owning unit and FAILS LOUDLY otherwise.
       * ``fields`` — mapping of field name -> :class:`~moderatorim.sdk.models.field.Field`.
       * ``soft_delete`` — if True (default), ``DataStore.delete`` is a soft delete.
 
