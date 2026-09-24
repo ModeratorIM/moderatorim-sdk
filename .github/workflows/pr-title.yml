@@ -1,0 +1,35 @@
+name: pr-title
+
+# We squash-merge, so the PR title becomes the commit on `main` and determines the version bump
+# (see VERSIONING.md). Enforce that it is a valid Conventional Commit.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Conventional Commit types we accept (matches the VERSIONING.md table).
+          types: |
+            feat
+            fix
+            chore
+            docs
+            refactor
+            test
+            ci
+            style
+            build
+            perf
+          requireScope: false
+          # Allow a bare type or `type(scope)`; the `!` breaking marker is permitted by the action.
+          subjectPattern: ^.+$
