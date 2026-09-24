@@ -51,7 +51,7 @@ It is **contracts only** — no runtime, no I/O, no heavy dependencies.
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and
-[SECURITY.md](SECURITY.md). Changes are tracked in [CHANGELOG.md](CHANGELOG.md).
+[SECURITY.md](SECURITY.md). Changes are tracked in [CHANGELOG.md](CHANGELOG.md); versioning + deprecation + core/SDK compatibility rules are in [VERSIONING.md](VERSIONING.md).
 
 ## License
 

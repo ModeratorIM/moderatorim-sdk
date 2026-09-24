@@ -56,7 +56,7 @@ change first (this repo), then update core.
 - Branch from `main`; open a pull request. `main` is protected — no direct pushes.
 - Keep the public API in `moderatorim/sdk/__init__.py` curated and stable; adding a name is cheap,
   renaming/removing one is a breaking change (call it out in the PR and the CHANGELOG).
-- One logical change per PR. Update [CHANGELOG.md](CHANGELOG.md) for any public-surface change.
+- One logical change per PR. Update [CHANGELOG.md](CHANGELOG.md) for any public-surface change. Version bumps follow [VERSIONING.md](VERSIONING.md) (SemVer + Conventional Commits).
 
 ## Licensing / CLA
 
