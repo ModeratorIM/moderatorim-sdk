@@ -70,6 +70,10 @@ class Manifest:
     extends: tuple[Extends, ...] = ()
     store_metadata: dict[str, Any] = field(default_factory=dict)
     nav: tuple[NavEntry, ...] = ()
+    # Stylesheet filenames the app ships in its static dir, injected into the <head> by core when
+    # one of the app's pages is served (served from /static/apps/{name}/<file>). App-owned theming:
+    # the app declares + ships the CSS; core serves it and links it. e.g. ("admin.css",).
+    styles: tuple[str, ...] = ()
     permissions: tuple[str, ...] = ()
     # Roles this unit declares (seeded into the core RBAC catalog at boot): {role_name: (grants,)}.
     # Renamed from `default_roles` — the seeding-default semantics live in the docs, not the field.
