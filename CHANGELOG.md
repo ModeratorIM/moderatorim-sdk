@@ -9,6 +9,22 @@ All notable changes to `moderatorim-sdk` are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] — unreleased
+
+### Added
+- `moderatorim` scaffolding CLI: `create app <name>` (flat app module) and the domain-first
+  `generate model|service|routes|screen|test <domain>` family (aliased `g`), with `--field
+  name:type` on `generate model`. Commands are additive and never overwrite existing source.
+
+### Changed
+- **Breaking:** `Manifest.default_roles` renamed to `Manifest.roles`.
+
+## [0.2.0] — 2026-09-25
+
+### Added
+- `Manifest.system_users` — a unit declares system-user principals (`{app}.{user_name}` → groups)
+  that the core seeds for userless (webhook / cron / boot) execution.
+
 ## [0.1.0] — 2026-09-24
 
 ### Added
