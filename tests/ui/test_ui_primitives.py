@@ -21,26 +21,20 @@ EXPECTED_PUBLIC_API = {
     # assets
     "ui_asset_dir",
     "ui_asset_tags",
-    # components
-    "AccountMenu",
+    # generic BeerCSS components
     "Alert",
     "Avatar",
     "Button",
     "Card",
-    "ContentHeader",
     "Field",
-    "Footer",
     "Grid",
     "Header",
-    "Heading",
     "Icon",
     "Input",
     "Nav",
-    "NavRail",
     "Row",
     "Select",
     "Stepper",
-    "ThemeToggle",
 }
 
 
