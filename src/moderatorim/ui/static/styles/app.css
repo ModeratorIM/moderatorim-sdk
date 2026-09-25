@@ -55,6 +55,13 @@
   background: var(--surface);
   color: var(--on-surface);
 }
+/* Beer CSS adds margin-block-start:1rem to a block that follows a sibling (its adjacent-sibling
+   rule). The content header is such a sibling, so the first content block below it inherits an
+   unwanted top gap. Core owns this layout seam — zero that implicit margin so the content sits
+   flush under the header (apps set their own internal spacing). */
+.mim-app-content > header + * {
+  margin-block-start: 0;
+}
 /* Scrim behind the mobile drawer (hidden until the drawer opens). */
 .mim-scrim {
   display: none;
