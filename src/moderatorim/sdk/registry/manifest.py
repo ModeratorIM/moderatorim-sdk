@@ -72,6 +72,13 @@ class Manifest:
     nav: tuple[NavEntry, ...] = ()
     permissions: tuple[str, ...] = ()
     default_roles: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    # System users this unit ships: each maps a system-user NAME ("{app}.{user_name}",
+    # e.g. "cron.user") to the group names it belongs to. Boot/install seeds each as a
+    # type="system", un-loginable core_user and places it in those groups, so the unit's userless
+    # work (event-bus subscribers, cron, webhooks, boot hooks) runs AS a real, least-privilege RBAC
+    # principal. Core validates the "{app}" ownership prefix and seeds them (apps declare, core
+    # decides) — the SDK only carries the declaration.
+    system_users: dict[str, tuple[str, ...]] = field(default_factory=dict)
     routes: Callable[[Any], None] | None = None
 
     def __post_init__(self) -> None:
