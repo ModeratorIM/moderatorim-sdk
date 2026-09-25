@@ -71,7 +71,9 @@ class Manifest:
     store_metadata: dict[str, Any] = field(default_factory=dict)
     nav: tuple[NavEntry, ...] = ()
     permissions: tuple[str, ...] = ()
-    default_roles: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    # Roles this unit declares (seeded into the core RBAC catalog at boot): {role_name: (grants,)}.
+    # Renamed from `default_roles` — the seeding-default semantics live in the docs, not the field.
+    roles: dict[str, tuple[str, ...]] = field(default_factory=dict)
     # System users this unit ships: each maps a system-user NAME ("{app}.{user_name}",
     # e.g. "cron.user") to the group names it belongs to. Boot/install seeds each as a
     # type="system", un-loginable core_user and places it in those groups, so the unit's userless
