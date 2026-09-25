@@ -1,0 +1,23 @@
+# {display_name}
+
+{description}
+
+A ModeratorIM **app** — a path-discovered addon. It exposes a `manifest` at its module root and
+imports **only** `moderatorim.sdk` (never `moderatorim.core`); it talks to core at runtime through
+injected handles (`ctx.store`, `ctx.authz`, `ctx.can`, the event bus).
+
+## Conventions
+
+- Tables are declared with the `{name}_` prefix (e.g. `{name}_users`), validated at boot.
+- Permissions and roles live in the `{name}.*` namespace.
+- Fold by domain: `moderatorim generate model <domain>` creates `<domain>/model.py`, and
+  `generate service/routes/screen <domain>` add to that same domain package.
+
+## Layout
+
+```
+{name}/
+  __init__.py        # exposes `manifest`
+  manifest.py        # the unit's self-declaration
+  tests/             # hermetic tests (run with pytest)
+```

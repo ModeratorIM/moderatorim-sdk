@@ -1,0 +1,26 @@
+"""{display_name} — a ModeratorIM APP (a path-discovered addon).
+
+Imports ONLY ``moderatorim.sdk`` — never ``moderatorim.core``. Interacts with core at runtime
+through injected handles (``ctx.store`` / ``ctx.authz`` / ``ctx.can`` / the event bus), never by
+importing it. Models declare ``{name}_``-prefixed tables; permissions/roles live in the ``{name}.*``
+namespace.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from moderatorim.sdk import Manifest, UnitType
+
+
+def register(core: Any) -> None:
+    """One-time boot hook: wire services / subscribe to events here."""
+
+
+manifest = Manifest(
+    name="{name}",
+    type=UnitType.APP,
+    register=register,
+    version="{version}",
+    display_name="{display_name}",
+)
