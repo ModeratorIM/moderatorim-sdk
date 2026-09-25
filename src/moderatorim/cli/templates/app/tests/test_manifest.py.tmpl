@@ -1,0 +1,14 @@
+"""Smoke test for the {name} app's manifest — it imports, is well-formed, and names itself."""
+
+from __future__ import annotations
+
+import {name}
+from moderatorim.sdk import Manifest, UnitType
+
+
+def test_manifest_is_well_formed() -> None:
+    m = {name}.manifest
+    assert isinstance(m, Manifest)
+    assert m.name == "{name}"
+    assert m.type is UnitType.APP
+    assert callable(m.register)
