@@ -12,11 +12,31 @@ from moderatorim.ui import Component, Raw, attrs, esc, tag
 
 # The frozen public surface of moderatorim.ui. Update DELIBERATELY with a version bump + CHANGELOG.
 EXPECTED_PUBLIC_API = {
+    # primitives
     "Component",
     "Raw",
     "attrs",
     "esc",
     "tag",
+    # components
+    "AccountMenu",
+    "Alert",
+    "Avatar",
+    "Button",
+    "Card",
+    "ContentHeader",
+    "Field",
+    "Footer",
+    "Grid",
+    "Heading",
+    "Icon",
+    "Input",
+    "Nav",
+    "NavRail",
+    "Row",
+    "Select",
+    "Stepper",
+    "ThemeToggle",
 }
 
 
