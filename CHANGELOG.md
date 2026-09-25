@@ -12,6 +12,22 @@ All notable changes to `moderatorim-sdk` are documented here. The format follows
 ## [0.3.0] — unreleased
 
 ### Added
+- **`moderatorim.ui` component library** — the single source of truth for the BeerCSS UI
+  components, a top-level peer of `moderatorim.sdk`/`moderatorim.cli` (SDK-owned by convention;
+  imports stdlib + SDK contracts only, never `moderatorim.core`). Both core and apps import their
+  components from here, so there is one library to maintain instead of a core copy plus per-app
+  re-implementations. Exposes the primitives (`tag`, `Raw`, `esc`, `attrs`, `Component`), the
+  components (`Card`, `Button`, `Input`, `Select`, `Field`, `Alert`, `Avatar`, `Icon`, `Heading`,
+  `Stepper`, `ThemeToggle`, `ContentHeader`, `Row`/`Grid`/`Nav`, `Footer`, and the `NavRail`/
+  `AccountMenu` dumb widgets), and the shipped BeerCSS/MDC/base assets via `ui_asset_dir()` +
+  `ui_asset_tags(base_url)` (a host mounts + references them; serving stays a host job).
+- **Validation moved into the SDK** (`Validator`, `Required`, `MinLength`, `MaxLength`, `Min`,
+  `Max`, `Pattern`, `Email`, `OneOf`, `PasswordPolicy`, `ValidationError`, `Result`,
+  `validate_field`, `validate_form`, `build_validators`). Each validator renders HTML hints AND
+  enforces server-side from one declaration; placing it with the field/model contract makes
+  server-side enforcement run on the data path regardless of whether a UI is rendered (security by
+  default). `moderatorim.ui.Input` renders an SDK `Validator`.
+
 - **`moderatorim` scaffolding CLI** — a console command (`moderatorim.cli:main`) for authoring and
   growing units. Every command is **additive and never overwrites** existing source. Commands are
   grouped by `action_type` (the intent the verb expresses):
