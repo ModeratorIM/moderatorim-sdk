@@ -28,3 +28,18 @@ def test_manifest_name_validation() -> None:
 def test_nav_entry_icon_is_asset() -> None:
     assert NavEntry("A", "/a", "star").icon_is_asset is False
     assert NavEntry("A", "/a", "/static/a.svg").icon_is_asset is True
+
+
+def test_manifest_system_users_default_empty_and_carries_declaration() -> None:
+    # default: no system users
+    m = Manifest(name="widget", type=UnitType.APP, register=lambda c: None)
+    assert m.system_users == {}
+    # carries a declared {name: (groups,)} mapping verbatim (SDK only records; core validates/seeds)
+    declared = {"cron.user": ("cron-runners",), "cron.worker": ("cron-runners", "cron-heavy")}
+    m2 = Manifest(
+        name="cron",
+        type=UnitType.APP,
+        register=lambda c: None,
+        system_users=declared,
+    )
+    assert m2.system_users == declared
