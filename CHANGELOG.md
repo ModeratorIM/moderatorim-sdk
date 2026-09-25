@@ -20,10 +20,12 @@ All notable changes to `moderatorim-sdk` are documented here. The format follows
   imports stdlib + SDK contracts only, never `moderatorim.core`). Both core and apps import their
   components from here, so there is one library to maintain instead of a core copy plus per-app
   re-implementations. Exposes the primitives (`tag`, `Raw`, `esc`, `attrs`, `Component`), the
-  components (`Card`, `Button`, `Input`, `Select`, `Field`, `Alert`, `Avatar`, `Icon`, `Heading`,
-  `Stepper`, `ThemeToggle`, `ContentHeader`, `Row`/`Grid`/`Nav`, `Footer`, and the `NavRail`/
-  `AccountMenu` dumb widgets), and the shipped BeerCSS/MDC/base assets via `ui_asset_dir()` +
+  generic BeerCSS components (`Card`, `Button`, `Input`, `Select`, `Field`, `Alert`, `Avatar`,
+  `Icon`, `Stepper`, `Row`/`Grid`/`Nav`, and `Header` — a generic app bar with `title`/`actions`/
+  `leading` slots an app composes), and the shipped BeerCSS/MDC/base assets via `ui_asset_dir()` +
   `ui_asset_tags(base_url)` (a host mounts + references them; serving stays a host job).
+  ModeratorIM-specific chrome (the nav rail, account menu, content-pane header, footer, screen
+  headings, theme toggle) stays in core — `moderatorim.ui` holds generic BeerCSS components only.
 - **Validation moved into the SDK** (`Validator`, `Required`, `MinLength`, `MaxLength`, `Min`,
   `Max`, `Pattern`, `Email`, `OneOf`, `PasswordPolicy`, `ValidationError`, `Result`,
   `validate_field`, `validate_form`, `build_validators`). Each validator renders HTML hints AND
