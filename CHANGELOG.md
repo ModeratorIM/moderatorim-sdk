@@ -9,6 +9,42 @@ All notable changes to `moderatorim-sdk` are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] — unreleased
+
+### Added
+- **`moderatorim` scaffolding CLI** — a console command (`moderatorim.cli:main`) for authoring and
+  growing units. Every command is **additive and never overwrites** existing source. Commands are
+  grouped by `action_type` (the intent the verb expresses):
+
+  | action | action_type | description |
+  |---|---|---|
+  | `create app <name>` | create-container | Scaffold a new flat app module in the current directory (manifest + README + tests, no packaging config). Flags: `--display-name` (alias `--name`) → `Manifest.display_name`, `--description` → README summary, `--version` → `Manifest.version` (default `0.0.0`). |
+  | `generate model <domain>` (alias `g`) | operate-in-app | Write `<domain>/model.py` and register the model in the manifest's `models=(…)`. Repeatable `--field name:type` (`str`/`int`/`bool`) declares columns; the table name is `{app}_{domain}`. |
+  | `generate service <domain>` | operate-in-app | Write `<domain>/service.py` — the domain's service stub. |
+  | `generate routes <domain>` | operate-in-app | Write `<domain>/routes.py` — the domain's route registration. **App units only.** |
+  | `generate screen <domain>` | operate-in-app | Write `<domain>/screen.py` — the domain's screen/view stub. **App units only.** |
+  | `generate test <domain>` | operate-in-app | Write `tests/test_<domain>.py` — the domain's test stub. |
+
+  `create` states the unit **kind** explicitly (nothing exists to infer it from yet). `generate` runs
+  **in the unit root** and reads the kind from `./manifest.py` (`Manifest.type`), which **gates the
+  valid artifacts**: apps allow all five, backends/platforms allow only `service`/`test` (`routes`/
+  `screen` are refused with a kind-specific message).
+
+### Changed
+- **Breaking:** `Manifest.default_roles` renamed to `Manifest.roles`.
+
+## [0.2.0] — 2026-09-25
+
+### Added
+- `Manifest.system_users` — a unit declares system-user principals (`{app}.{user_name}` → groups)
+  that the core seeds for userless (webhook / cron / boot) execution.
+
+### Documentation
+- `Model.table` prefix is documented as **mandatory, developer-declared, and boot-validated**
+  (`{unit}_{name}`), rather than auto-generated.
+- Added a uniform release-notes format: `.github/release.yml` categorizes auto-generated notes by
+  PR label, paired with a `RELEASING.md` human-summary template.
+
 ## [0.1.0] — 2026-09-24
 
 ### Added
