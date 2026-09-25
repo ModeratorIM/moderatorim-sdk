@@ -37,6 +37,8 @@ EXPECTED_PUBLIC_API = {
     "FilterOp",
     "Record",
     "RecordList",
+    # cachestore port
+    "CacheStore",
     # bus
     "Event",
     "EventKind",

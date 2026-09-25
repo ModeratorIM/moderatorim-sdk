@@ -29,6 +29,10 @@ All notable changes to `moderatorim-sdk` are documented here. The format follows
   **in the unit root** and reads the kind from `./manifest.py` (`Manifest.type`), which **gates the
   valid artifacts**: apps allow all five, backends/platforms allow only `service`/`test` (`routes`/
   `screen` are refused with a kind-specific message).
+- **`CacheStore` port** — a narrow ephemeral key/value cache contract
+  (`get`/`set(ttl=)`/`delete`/`incr`/`expire`/`exists`, string values) that the core caches
+  against. Backed by an in-memory default or Redis (chosen by the core from configuration, not the
+  setup wizard); the port lives in the SDK so it is a frozen contract a third party can implement.
 
 ### Changed
 - **Breaking:** `Manifest.default_roles` renamed to `Manifest.roles`.

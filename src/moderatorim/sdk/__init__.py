@@ -16,6 +16,9 @@ from moderatorim.sdk.bus import (
     EventKind,
     Handler,
 )
+from moderatorim.sdk.cachestore import (
+    CacheStore,
+)
 from moderatorim.sdk.datastore import (
     DataStore,
     Filter,
@@ -74,6 +77,8 @@ __all__ = [
     "FilterOp",
     "Record",
     "RecordList",
+    # cachestore port
+    "CacheStore",
     # bus
     "Event",
     "EventKind",
