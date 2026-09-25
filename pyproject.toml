@@ -46,6 +46,10 @@ packages = ["src/moderatorim"]
 # `moderatorim create app` can render them at runtime.
 [tool.hatch.build.targets.wheel.force-include]
 "src/moderatorim/cli/templates" = "moderatorim/cli/templates"
+# Ship the moderatorim.ui front-end assets (BeerCSS/MDC/htmx, base + theme CSS, component-behavior
+# JS) as package data — the component library carries its own default design + behavior. A host
+# locates them via moderatorim.ui.ui_asset_dir() and serves them at a URL it owns.
+"src/moderatorim/ui/static" = "moderatorim/ui/static"
 
 # ---------------------------------------------------------------------------
 # Tooling config (mirrors moderatorim-core)

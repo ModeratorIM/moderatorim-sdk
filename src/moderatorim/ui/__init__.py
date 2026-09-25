@@ -13,6 +13,7 @@ never drags in the runtime. A future core contributor must not grab the ``modera
 
 from moderatorim.ui.accountmenu import AccountMenu
 from moderatorim.ui.alert import Alert
+from moderatorim.ui.assets import ui_asset_dir, ui_asset_tags
 from moderatorim.ui.avatar import Avatar
 from moderatorim.ui.button import Button
 from moderatorim.ui.card import Card
@@ -37,6 +38,9 @@ __all__ = [
     "attrs",
     "esc",
     "tag",
+    # assets (shipped BeerCSS/MDC/base CSS+JS; host mounts + emits refs)
+    "ui_asset_dir",
+    "ui_asset_tags",
     # components
     "AccountMenu",
     "Alert",

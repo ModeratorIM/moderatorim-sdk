@@ -18,6 +18,9 @@ EXPECTED_PUBLIC_API = {
     "attrs",
     "esc",
     "tag",
+    # assets
+    "ui_asset_dir",
+    "ui_asset_tags",
     # components
     "AccountMenu",
     "Alert",
