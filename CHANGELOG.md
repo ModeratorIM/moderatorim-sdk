@@ -12,6 +12,9 @@ All notable changes to `moderatorim-sdk` are documented here. The format follows
 ## [0.3.0] — unreleased
 
 ### Added
+- **`moderatorim.ui.Header`** — a generic BeerCSS app-bar component (`header>nav`) with `title` +
+  `actions` + `leading` slots (and `class_`/`title_class` passthroughs a host uses for its own
+  styling). Apps compose their own top bar: `Header("Members", actions=[Button("Invite")])`.
 - **`moderatorim.ui` component library** — the single source of truth for the BeerCSS UI
   components, a top-level peer of `moderatorim.sdk`/`moderatorim.cli` (SDK-owned by convention;
   imports stdlib + SDK contracts only, never `moderatorim.core`). Both core and apps import their

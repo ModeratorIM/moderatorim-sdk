@@ -31,6 +31,7 @@ EXPECTED_PUBLIC_API = {
     "Field",
     "Footer",
     "Grid",
+    "Header",
     "Heading",
     "Icon",
     "Input",
