@@ -47,7 +47,7 @@ Every GitHub Release follows the same shape so a reader knows at a glance **what
 <1-3 sentences: the theme of the release and who it affects. For a pre-1.0 release, restate the
 "contract not yet stable - expect breaks in 0.x minors" note.>
 
-**Install:** `pip install git+https://github.com/ModeratorIM/moderatorim-sdk.git@vX.Y.Z`
+**Install:** `pip install git+https://github.com/ModeratorIM/sdk.git@vX.Y.Z`
 
 <!-- the categorized change list below is AUTO-GENERATED from merged PR labels; do not hand-write it -->
 ```
