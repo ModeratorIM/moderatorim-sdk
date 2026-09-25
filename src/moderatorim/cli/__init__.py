@@ -15,6 +15,8 @@ import re
 import sys
 from pathlib import Path
 
+from moderatorim.cli.context import ContextError, detect_unit
+from moderatorim.cli.manifest_edit import ManifestEditError, register_model
 from moderatorim.cli.render import RenderError, render_kind
 
 # A unit module name: lowercase, starts with a letter, letters/digits/underscore — matches the
@@ -62,6 +64,77 @@ def _create_app(args: argparse.Namespace) -> int:
     return 0
 
 
+_DOMAIN_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+
+
+def _parse_fields(raw: list[str] | None) -> str:
+    """Render --field name:type args into the model fields body. Defaults to one STR field."""
+    _TYPE_MAP = {
+        "str": "STR",
+        "int": "INT",
+        "bool": "BOOL",
+        "float": "FLOAT",
+        "text": "TEXT",
+        "datetime": "DATETIME",
+    }
+    entries: list[tuple[str, str]] = []
+    for spec in raw or []:
+        fname, _, ftype = spec.partition(":")
+        ft = _TYPE_MAP.get(ftype.lower().strip(), "STR")
+        entries.append((fname.strip(), ft))
+    if not entries:
+        entries = [("name", "STR")]
+    return "\n".join(f'        "{n}": Field(FieldType.{t}),' for n, t in entries)
+
+
+def _generate(args: argparse.Namespace) -> int:
+    artifact: str = args.artifact
+    domain: str = args.domain
+    if not _DOMAIN_RE.match(domain):
+        print(
+            f"error: {domain!r} is not a valid domain name — lowercase letters, digits and "
+            "underscores, starting with a letter.",
+            file=sys.stderr,
+        )
+        return 2
+
+    try:
+        unit = detect_unit()
+        unit.require_artifact(artifact)
+    except ContextError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+
+    root = unit.manifest_path.parent
+    Domain = domain[:1].upper() + domain[1:]
+    variables = {
+        "name": domain,
+        "Name": Domain,
+        "domain": domain,
+        "Domain": Domain,
+        "app": unit.name,
+        "fields": _parse_fields(getattr(args, "field", None)),
+    }
+    # test renders into tests/; every other artifact renders into the <domain>/ package.
+    dest = (root / "tests") if artifact == "test" else (root / domain)
+    try:
+        written = render_kind(artifact, dest, variables)
+    except RenderError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+    if artifact == "model":
+        try:
+            register_model(unit.manifest_path, domain, Domain)
+        except ManifestEditError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 1
+
+    for path in written:
+        print(f"  created {path.relative_to(root.parent)}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="moderatorim", description="ModeratorIM app scaffolding CLI."
@@ -87,6 +160,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     app.add_argument("--version", default="0.0.0", help="Initial Manifest.version (default 0.0.0).")
     app.set_defaults(func=_create_app)
+
+    gen = sub.add_parser(
+        "generate",
+        aliases=["g"],
+        help="Generate a domain artifact in the current unit (model/service/routes/screen/test).",
+    )
+    gen_sub = gen.add_subparsers(dest="artifact", metavar="<artifact>")
+    for artifact in ("model", "service", "routes", "screen", "test"):
+        p = gen_sub.add_parser(artifact, help=f"Generate a {artifact} for a domain.")
+        p.add_argument("domain", help="Domain name (lowercase, e.g. 'users').")
+        if artifact == "model":
+            p.add_argument(
+                "--field",
+                action="append",
+                metavar="NAME:TYPE",
+                help="Repeatable field, e.g. --field title:str (str/int/bool/float/text/datetime).",
+            )
+        p.set_defaults(func=_generate, artifact=artifact)
 
     return parser
 

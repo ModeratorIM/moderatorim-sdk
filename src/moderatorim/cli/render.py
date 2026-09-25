@@ -50,8 +50,16 @@ def render_kind(kind: str, dest: Path, variables: dict[str, Any]) -> list[Path]:
         if src.is_dir():
             continue
         rel = src.relative_to(src_root)
-        # substitute __name__ path segments, and drop a trailing .tmpl on the file name
-        parts = [variables["name"] if seg == "__name__" else seg for seg in rel.parts]
+        # substitute __name__ path segments and {placeholder} names in path segments, and drop a
+        # trailing .tmpl on the file name
+        parts: list[str] = []
+        for seg in rel.parts:
+            if seg == "__name__":
+                parts.append(str(variables["name"]))
+            elif "{" in seg:
+                parts.append(_subst(seg, variables))
+            else:
+                parts.append(seg)
         is_tmpl = parts[-1].endswith(".tmpl")
         if is_tmpl:
             parts[-1] = parts[-1][: -len(".tmpl")]
