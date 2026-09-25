@@ -1,0 +1,15 @@
+"""The {domain} domain's route handlers.
+
+Register these on the app via the manifest's ``routes`` hook. Handlers declare a ``permission=``
+guard the core enforces; that guard MAY reference another unit's permission (e.g. core.users.read).
+"""
+
+from __future__ import annotations
+
+from moderatorim.sdk import App, Ctx, Page
+
+
+def register_routes(app: App) -> None:
+    @app.page("/{domain}", permission="{app}.{domain}.read")
+    async def {domain}_index(ctx: Ctx) -> Page:
+        return Page(title="{Domain}", content="<h1>{Domain}</h1>")
