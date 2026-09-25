@@ -25,8 +25,10 @@ At runtime, the ModeratorIM core implements these contracts and hands your handl
 OpenTelemetry's API/SDK split: a small public contract package both the runtime and the plugins
 depend on.
 
-`moderatorim` is a shared namespace — this package provides `moderatorim.sdk`; the core runtime
-provides `moderatorim.core`. Installing this SDK does **not** install the core runtime.
+`moderatorim` is a shared namespace — this package provides `moderatorim.sdk` (the contract
+kernel), `moderatorim.cli` (the scaffolding command), and `moderatorim.ui` (the component
+library); the core runtime provides `moderatorim.core`. Installing this SDK does **not** install
+the core runtime.
 
 ## Scaffolding CLI
 

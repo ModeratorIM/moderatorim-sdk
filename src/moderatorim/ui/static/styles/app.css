@@ -1,0 +1,578 @@
+/* ModeratorIM structural theme — layered AFTER beer.min.css and the theme-{light,dark}.css
+   colour tokens. This file is MODE-AGNOSTIC: only layout/spacing lives here. Colour and surface
+   tokens (--mim-scaffold, --mim-surface, backgrounds) are in theme-light.css / theme-dark.css.
+   All chrome uses Beer CSS's own components (header.fixed, article, nav.row); no custom
+   component CSS. Mobile-first: fluid below 768px, content column capped at 768px. */
+
+:root {
+  --mim-content-max: 768px;
+  --mim-rail-width: 240px;
+  --mim-rail-width-mini: 72px;
+}
+
+/* ---- Authenticated app shell: left nav rail (dark-purple) + content ------------------------ */
+/* The shell OWNS its layout (does not rely on Beer CSS's nav.left grid area): a flex row of the
+   dark-purple rail + the content main. Mobile-first — rail is an off-canvas drawer by default,
+   revealed as a fixed sidebar at >= 768px. */
+.mim-shell {
+  display: flex;
+  min-height: 100vh;
+}
+.mim-nav-rail {
+  background: var(--mim-rail-bg);
+  color: var(--mim-rail-fg);
+  width: var(--mim-rail-width);
+  flex: 0 0 var(--mim-rail-width);
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+/* On-rail text/icons are light in both modes — never the body's --on-surface (which flips). */
+.mim-nav-rail a,
+.mim-nav-rail button,
+.mim-nav-rail .mim-rail-brand,
+.mim-nav-rail .mim-account {
+  color: var(--mim-rail-fg);
+}
+.mim-nav-rail .mim-rail-muted {
+  color: var(--mim-rail-fg-muted);
+}
+.mim-nav-rail .mim-rail-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  font-weight: 600;
+}
+.mim-nav-rail .mim-rail-spacer {
+  flex: 1 1 auto;
+}
+/* Content main fills the rest; page bodies render here (NOT dark — normal surface). */
+.mim-app-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--surface);
+  color: var(--on-surface);
+}
+/* Scrim behind the mobile drawer (hidden until the drawer opens). */
+.mim-scrim {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 30;
+}
+
+/* --- Mobile-first: rail is an off-canvas drawer (< 768px) --- */
+.mim-nav-rail {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 40;
+  transform: translateX(-100%);
+  transition: transform 0.2s ease;
+}
+body.mim-nav-drawer-open .mim-nav-rail {
+  transform: translateX(0);
+}
+body.mim-nav-drawer-open .mim-scrim {
+  display: block;
+}
+
+/* Mobile (< 768px): the drawer is ALWAYS the full rail — never the mini/collapsed variant, even
+   if `.small` is persisted from a desktop session. Override the mini rules at this width. */
+@media (max-width: 767.98px) {
+  .mim-nav-rail.small {
+    width: var(--mim-rail-width);
+    flex: 0 0 var(--mim-rail-width);
+  }
+  .mim-nav-rail.small .mim-nav-label,
+  .mim-nav-rail.small .mim-rail-wordmark,
+  .mim-nav-rail.small .mim-nav-badge,
+  .mim-nav-rail.small .mim-account-identity,
+  .mim-nav-rail.small .mim-account .mim-account-caret {
+    display: revert;
+  }
+  .mim-nav-rail.small .mim-nav-item,
+  .mim-nav-rail.small .mim-account {
+    justify-content: flex-start;
+    width: 100%;
+  }
+  .mim-nav-rail.small .mim-rail-brand {
+    flex-direction: row;
+  }
+  /* tooltip is only for mini; not needed when full */
+  .mim-nav-rail.small .mim-nav-item .tooltip {
+    display: none;
+  }
+  /* the collapse/expand chevron is a desktop affordance — hide it in the mobile drawer */
+  .mim-rail-toggle {
+    display: none;
+  }
+}
+
+/* --- Desktop (>= 768px): rail is a persistent sidebar, no drawer/scrim, menu button hidden --- */
+@media (min-width: 768px) {
+  .mim-nav-rail {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    transform: none;
+  }
+  .mim-scrim {
+    display: none !important;
+  }
+  .mim-nav-open {
+    display: none !important;
+  }
+}
+
+/* Content-area header uses Beer CSS's header>nav app bar; only reset the title's default margin
+   (Beer's h5 carries block margins that would offset the bar). */
+/* Content-area header uses Beer CSS's header>nav app bar; trim its default padding/height so it
+   is compact (Beer's header is tall by default). */
+.mim-app-content > header {
+  padding: 0;
+  margin: 0;
+  min-block-size: auto;
+}
+.mim-content-header {
+  padding: 0;
+  margin: 0;
+  min-block-size: auto;
+}
+.mim-content-header .mim-page-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Rail nav items. */
+.mim-nav-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  width: 100%;
+}
+.mim-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  position: relative; /* anchor for .tooltip */
+}
+.mim-nav-item:hover {
+  background: var(--mim-rail-hover-bg);
+}
+.mim-nav-item.active {
+  background: var(--mim-rail-active-bg);
+}
+.mim-nav-item .mim-nav-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+/* Right-aligned badge counter (the .max label pushes it to the right). */
+.mim-nav-badge {
+  flex: 0 0 auto;
+  min-width: 1.25rem;
+  padding: 0 0.375rem;
+  border-radius: 1rem;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 0.7rem;
+  line-height: 1.25rem;
+  text-align: center;
+}
+
+/* ---- Mini (collapsed) rail: icon-only ------------------------------------------------------- */
+/* Narrow, icon-only. Labels + wordmark + badges hide; the .tooltip shows the name on hover. */
+.mim-nav-rail.small {
+  width: var(--mim-rail-width-mini);
+  flex: 0 0 var(--mim-rail-width-mini);
+}
+.mim-nav-rail.small .mim-nav-label,
+.mim-nav-rail.small .mim-nav-badge,
+.mim-nav-rail.small .mim-rail-wordmark {
+  display: none;
+}
+.mim-nav-rail.small .mim-nav-item {
+  justify-content: center;
+}
+/* #5: in mini, stack the toggle UNDER the icon (brand becomes a centered column). */
+.mim-nav-rail.small .mim-rail-brand {
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.mim-nav-rail.small .mim-rail-brand .max {
+  display: none; /* the spacer is irrelevant when stacked */
+}
+/* Tooltip is the label source ONLY in mini; suppress it while expanded (label is visible text). */
+.mim-nav-rail:not(.small) .mim-nav-item .tooltip {
+  display: none;
+}
+
+/* ---- Account block (bottom of the rail) + popover menu ------------------------------------- */
+.mim-account {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 93%;
+  padding: 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--mim-rail-fg);
+  cursor: pointer;
+  border-radius: 0.5rem;
+  text-align: left;
+}
+.mim-account:hover {
+  background: var(--mim-rail-hover-bg);
+}
+.mim-avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--mim-rail-active-bg);
+  color: var(--mim-rail-fg);
+  font-weight: 600;
+}
+.mim-avatar img,
+.mim-avatar.circle > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mim-avatar .mim-avatar-icon {
+  width: 60%;
+  height: 60%;
+}
+.mim-account-identity {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.mim-account-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mim-account-email {
+  font-size: 0.75rem;
+}
+/* In mini, show only the avatar. */
+.mim-nav-rail.small .mim-account-identity {
+  display: none;
+}
+.mim-nav-rail.small .mim-account {
+  justify-content: center;
+  width: 73%;
+}
+/* No hover state on the mini account toggle. */
+.mim-nav-rail.small .mim-account:hover {
+  background: transparent;
+}
+
+/* The account block wraps the trigger + Beer's nested <menu> and anchors it (Beer positions the
+   menu relative to this). */
+.mim-account-block {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+.mim-account .mim-account-caret {
+  margin-inline-start: auto;
+  flex: 0 0 auto;
+}
+.mim-nav-rail.small .mim-account .mim-account-caret {
+  display: none;
+}
+/* Beer CSS's menu.top.active owns show/position/elevation. We only theme it (light surface card
+   floating over the content, since it is not part of the dark rail) and give it a usable width. */
+.mim-account-menu {
+  min-width: 200px;
+  padding: 0.25rem;
+  background: var(--surface);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  inset-inline: 0 auto; /* left-align to the account block (Beer defaults to right) */
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start; /* items flush-left, not centered */
+}
+/* The rail must not clip the popover. */
+.mim-nav-rail {
+  overflow: visible;
+}
+.mim-account-link {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--on-surface);
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 0.375rem;
+  text-align: left;
+}
+.mim-account-menu .mim-account-link {
+  color: var(--on-surface);
+}
+.mim-account-link:hover {
+  background: var(--mim-scaffold);
+}
+.mim-account-divider {
+  height: 1px;
+  margin: 0.25rem 0;
+  background: var(--outline-variant);
+}
+
+/* 404 / not-found page */
+.mim-notfound-code {
+  font-size: 4rem;
+  line-height: 1;
+  margin: 0 0 0.5rem;
+  color: var(--primary);
+}
+.mim-notfound-actions {
+  margin-top: 1rem;
+}
+
+
+/* Beer CSS pads main.responsive; the header (header.fixed) sits flush and .mim-content owns the
+   spacing, so zero it. */
+main.responsive {
+  padding: 0;
+}
+
+/* Wordmark weight in the Beer CSS header nav. */
+.mim-header-bar h6.max {
+  font-weight: 600;
+}
+
+/* Centered content column, mobile-first (fluid, capped at 768px). Top padding clears the fixed
+   Beer CSS header. */
+.mim-content {
+  width: 100%;
+  max-width: var(--mim-content-max);
+  margin: 0 auto;
+  padding: 5rem 1rem 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Space the wizard footer (a Beer CSS nav.row) from the step body above it. */
+.mim-wizard-footer {
+  margin-top: 1.5rem;
+}
+
+/* Mobile: hide the stepper text labels, leaving just the numbered markers + connectors.
+   600px is Beer CSS's small/medium breakpoint. */
+@media (max-width: 600px) {
+  .mim-step-label {
+    display: none;
+  }
+  /* Wizard nav buttons (Previous / Continue) show ICONS ONLY on mobile — hide their label span. */
+  .mim-nav-btn span {
+    display: none;
+  }
+}
+
+/* Setup form: single-column stack (no Beer CSS grid, so fields don't flow into columns). */
+.mim-setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+/* Beer CSS fields carry their own bottom margin; neutralize it so the flex `gap` above is the
+   single, tighter source of spacing between inputs. */
+.mim-setup-form .field {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Page footer: muted, padded copyright line. */
+.mim-footer {
+  padding: 1.5rem 1rem;
+  opacity: 0.6;
+}
+
+/* --- Auth screens (signin/signup/reset/mfa/verify) --------------------------------------
+   Logo centered ABOVE a 480px card, night-mode toggle pinned top-right, no app bar. */
+.mim-auth-stack {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 3rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-height: 70vh;
+  justify-content: center;
+}
+.mim-auth-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+/* Logo wordmark: extra-large. */
+.mim-auth-brand p.bold {
+  font-size: 1.5rem;
+}
+.mim-auth-card {
+  width: 100%;
+  max-width: 480px;
+}
+/* Night-mode toggle, pinned to the top-right corner (independent of any app bar). */
+.mim-auth-toggle {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 20;
+}
+/* Auth card: center the heading (title + subtitle) within the card. */
+.mim-auth-card .mim-heading {
+  text-align: center;
+}
+/* Default field border color for setup + auth forms. Mirror Beer CSS's own selector
+   (.field.border>:is(input,textarea,select)) at equal specificity so we override only the RESTING
+   border — Beer CSS's :hover / :focus rules are more specific and still win. */
+.mim-setup-form .field.border > :is(input, textarea, select) {
+  border-color: var(--outline-variant);
+}
+
+/* Text buttons (variant="text" → .button.transparent): primary-colored label, normal weight. */
+.mim-auth-form .button.transparent,
+.mim-wizard-footer .button.transparent {
+  color: var(--primary) !important;
+  font-weight: normal;
+}
+
+/* Connection-test badge: white text on the green/red chip. */
+.mim-test-badge,
+.mim-test-badge i,
+.mim-test-badge span {
+  color: #fff;
+}
+/* The result badge sits inline, just after the Test button. */
+.mim-test-result {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* The test spinner must not occupy layout space when idle (htmx-indicators are only opacity:0 by
+   default, which leaves an invisible gap). Collapse it unless a request is in flight. */
+.mim-test-spinner {
+  display: none;
+}
+.htmx-request .mim-test-spinner,
+.htmx-request.mim-test-spinner {
+  display: inline-block;
+}
+.mim-heading {
+  margin-bottom: 1rem;
+}
+.mim-title {
+  margin: 0;
+}
+.mim-subtitle {
+  margin: 0.25rem 0 0;
+  opacity: 0.7;
+}
+
+/* Backend card grid uses Beer CSS's own `grid` + `s12 m6` columns and `<article>` cards. The
+   ONLY custom behaviour here is product-specific: cards are greyed until selected (Beer CSS has
+   no built-in for that), plus hiding the radio and the check-when-selected toggle. */
+
+/* Hidden radio — the whole <label> card is the click target. */
+.mim-backend-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.mim-backend-label {
+  cursor: pointer;
+}
+.mim-backend-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+/* Grey-until-selected (the justified custom rule Beer CSS can't express). */
+.mim-backend-card {
+  opacity: 0.55;
+  filter: grayscale(0.4);
+  transition: opacity 0.15s, filter 0.15s, border-color 0.15s;
+}
+.mim-backend-label:hover .mim-backend-card {
+  opacity: 0.85;
+}
+/* The check icon only shows on the selected card. */
+.mim-backend-check {
+  display: none;
+}
+.mim-backend-label:has(.mim-backend-radio:checked) .mim-backend-card {
+  opacity: 1;
+  filter: none;
+  border-color: var(--primary);
+}
+.mim-backend-label:has(.mim-backend-radio:checked) .mim-backend-check {
+  display: inline-flex;
+}
+
+/* Password requirements checklist (setup Account step). Markers are CSS ::before text glyphs
+   (bullet / check / cross) — NOT Material Symbols, so they render offline. States are driven by
+   account-validate.js (.ok / .fail) as the user types; neutral before any input. */
+.mim-pw-checklist {
+  list-style: none;
+  margin: 0.25rem 0 0.75rem;
+  padding: 0;
+  font-size: 0.8125rem;
+}
+.mim-pw-checklist .mim-pw-req {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  line-height: 1.5;
+  color: var(--on-surface-variant);
+}
+.mim-pw-checklist .mim-pw-req::before {
+  content: "•";
+  flex: 0 0 auto;
+  width: 1em;
+  text-align: center;
+  color: var(--on-surface-variant);
+}
+.mim-pw-checklist .mim-pw-req.ok {
+  color: var(--primary);
+}
+.mim-pw-checklist .mim-pw-req.ok::before {
+  content: "\2713"; /* ✓ */
+  color: var(--primary);
+}
+.mim-pw-checklist .mim-pw-req.fail {
+  color: var(--error);
+}
+.mim-pw-checklist .mim-pw-req.fail::before {
+  content: "\2717"; /* ✗ */
+  color: var(--error);
+}
