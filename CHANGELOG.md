@@ -18,7 +18,7 @@ All notable changes to `moderatorim-sdk` are documented here. The format follows
   components from here, so there is one library to maintain instead of a core copy plus per-app
   re-implementations. Exposes the primitives (`tag`, `Raw`, `esc`, `attrs`, `Component`), the
   components (`Card`, `Button`, `Input`, `Select`, `Field`, `Alert`, `Avatar`, `Icon`, `Heading`,
-  `Stepper`, `ThemeToggle`, `ContentHeader`, `Row`/`Grid`/`Nav`, `Footer`, and the `NavRail`/
+  `Stepper`, `ContentHeader`, `Row`/`Grid`/`Nav`, `Footer`, and the `NavRail`/
   `AccountMenu` dumb widgets), and the shipped BeerCSS/MDC/base assets via `ui_asset_dir()` +
   `ui_asset_tags(base_url)` (a host mounts + references them; serving stays a host job).
 - **Validation moved into the SDK** (`Validator`, `Required`, `MinLength`, `MaxLength`, `Min`,

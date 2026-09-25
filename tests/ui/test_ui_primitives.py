@@ -39,7 +39,6 @@ EXPECTED_PUBLIC_API = {
     "Row",
     "Select",
     "Stepper",
-    "ThemeToggle",
 }
 
 

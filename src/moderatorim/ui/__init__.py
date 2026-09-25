@@ -29,7 +29,6 @@ from moderatorim.ui.layout import Grid, Nav, Row
 from moderatorim.ui.navrail import NavRail
 from moderatorim.ui.select import Select
 from moderatorim.ui.stepper import Stepper
-from moderatorim.ui.themetoggle import ThemeToggle
 
 __all__ = [
     # primitives
@@ -59,5 +58,4 @@ __all__ = [
     "Row",
     "Select",
     "Stepper",
-    "ThemeToggle",
 ]
