@@ -21,6 +21,7 @@ from moderatorim.ui.component import Component
 from moderatorim.ui.contentheader import ContentHeader
 from moderatorim.ui.field import Field
 from moderatorim.ui.footer import Footer
+from moderatorim.ui.header import Header
 from moderatorim.ui.heading import Heading
 from moderatorim.ui.html import Raw, attrs, esc, tag
 from moderatorim.ui.icon import Icon
@@ -51,6 +52,7 @@ __all__ = [
     "Field",
     "Footer",
     "Grid",
+    "Header",
     "Heading",
     "Icon",
     "Input",
