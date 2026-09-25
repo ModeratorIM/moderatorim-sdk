@@ -31,9 +31,11 @@ def test_create_app_writes_expected_tree(tmp_path: Path) -> None:
     assert (app / "__init__.py").is_file()
     assert (app / "manifest.py").is_file()
     assert (app / "README.md").is_file()
-    assert (app / "widget" / "__init__.py").is_file()  # starter domain package
     assert (app / "tests" / "__init__.py").is_file()
     assert (app / "tests" / "test_manifest.py").is_file()
+    # NO starter domain package named after the app (that collided app-vs-domain); domains come
+    # from `generate <kind> <domain>`.
+    assert not (app / "widget").exists()
     # NO packaging config — apps are addons, not distributions
     assert not (app / "pyproject.toml").exists()
     # README carries the description + display name

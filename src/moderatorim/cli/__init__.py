@@ -125,7 +125,7 @@ def _generate(args: argparse.Namespace) -> int:
 
     if artifact == "model":
         try:
-            register_model(unit.manifest_path, domain, Domain)
+            register_model(unit.manifest_path, unit.name, domain, Domain)
         except ManifestEditError as exc:
             print(f"error: {exc}", file=sys.stderr)
             return 1

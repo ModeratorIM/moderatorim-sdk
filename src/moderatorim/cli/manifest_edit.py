@@ -22,10 +22,14 @@ class ManifestEditError(Exception):
     """The manifest could not be edited safely (unexpected shape, or already registered)."""
 
 
-def register_model(manifest_path: Path, domain: str, model_class: str) -> None:
-    """Add an import for ``<domain>.model.<model_class>`` and register it in ``models=(...)``."""
+def register_model(manifest_path: Path, app: str, domain: str, model_class: str) -> None:
+    """Add an import for ``<app>.<domain>.model.<model_class>`` and register it in ``models=(...)``.
+
+    The import is APP-QUALIFIED (``from {app}.{domain}.model import {Model}``) to match how units
+    are loaded — the grouping dir is on ``sys.path`` and the app is imported by its package name, so
+    intra-app imports are package-qualified (as in the reference admin app)."""
     src = manifest_path.read_text(encoding="utf-8")
-    import_line = f"from {domain}.model import {model_class}"
+    import_line = f"from {app}.{domain}.model import {model_class}"
 
     if model_class in src and import_line in src:
         raise ManifestEditError(f"{model_class} already registered in {manifest_path.name}")

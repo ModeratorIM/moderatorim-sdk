@@ -46,7 +46,7 @@ def test_generate_model_writes_domain_package_and_registers(tmp_path: Path) -> N
     assert '"age": Field(FieldType.INT),' in body
     # registered in the manifest's models=(...)
     manifest = (app / "manifest.py").read_text()
-    assert "from users.model import Users" in manifest
+    assert "from shop.users.model import Users" in manifest
     assert "Users" in manifest and "models=(" in manifest
 
 
@@ -86,6 +86,30 @@ def test_generate_screen_refused_in_backend(tmp_path: Path) -> None:
     # but service IS allowed in a backend
     assert _run_in(backend, ["generate", "service", "widgets"]) == 0
     assert (backend / "widgets" / "service.py").is_file()
+
+
+def test_generated_app_imports_as_package_with_registered_models(tmp_path: Path) -> None:
+    """Regression: with the grouping dir (tmp_path) on sys.path, importing the app by package name
+    resolves its manifest AND the app-qualified model imports the generator registered. This is how
+    units are loaded (parent on path, imported by name) — bare intra-app imports would break it."""
+    import importlib
+    import sys
+
+    app = _make_app(tmp_path, "shop")
+    assert _run_in(app, ["generate", "model", "products", "--field", "title:str"]) == 0
+
+    sys.path.insert(0, str(tmp_path))
+    try:
+        mod = importlib.import_module("shop")
+        m = mod.manifest
+        assert m.name == "shop"
+        assert [c.__name__ for c in m.models] == ["Products"]
+        assert [c.table for c in m.models] == ["shop_products"]
+    finally:
+        sys.path.remove(str(tmp_path))
+        for name in list(sys.modules):
+            if name == "shop" or name.startswith("shop."):
+                del sys.modules[name]
 
 
 def test_generate_bad_domain_name_refused(tmp_path: Path) -> None:
