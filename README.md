@@ -1,8 +1,8 @@
 # ModeratorIM SDK
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/ModeratorIM/moderatorim-sdk/releases)
-[![CI](https://github.com/ModeratorIM/moderatorim-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ModeratorIM/moderatorim-sdk/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/ModeratorIM/sdk/releases)
+[![CI](https://github.com/ModeratorIM/sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ModeratorIM/sdk/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
 
 The **ModeratorIM SDK** — the contract kernel you build ModeratorIM apps against.
@@ -75,7 +75,7 @@ existing source.
 ```bash
 pip install moderatorim-sdk   # once published
 # or, from source:
-pip install git+https://github.com/ModeratorIM/moderatorim-sdk.git
+pip install git+https://github.com/ModeratorIM/sdk.git
 ```
 
 ## What's in it
