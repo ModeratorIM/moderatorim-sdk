@@ -41,6 +41,11 @@ class NavEntry:
     permission: str | None = None
     order: int = 100
     badge: str | int | None = None
+    # Placement: when True this entry is the app's ENTRY POINT in the account popup menu (gated by
+    # ``permission``) instead of a tile in the global launcher rail. The app's other nav entries
+    # still form its in-app (app-scoped) rail. Use for a management app reached via the account
+    # menu rather than launched from the rail (e.g. admin). Default False = a launcher tile.
+    is_popup_menu: bool = False
 
     @property
     def icon_is_asset(self) -> bool:
