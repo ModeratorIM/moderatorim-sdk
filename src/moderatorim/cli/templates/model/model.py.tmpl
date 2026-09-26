@@ -5,7 +5,8 @@ from __future__ import annotations
 from moderatorim.sdk import FieldType, TableColumn, TableModel
 
 {Domain} = TableModel(
-    table="{app}_{domain}",
+    name="{app}_{domain}",
+    label="{Domain}",
     columns=(
 {fields}
     ),
