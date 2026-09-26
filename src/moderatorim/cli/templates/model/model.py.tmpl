@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from moderatorim.sdk import Field, FieldType, Model
+from moderatorim.sdk import FieldType, TableColumn, TableModel
 
-
-class {Domain}(Model):
-    table = "{app}_{domain}"
-    fields = {{
+{Domain} = TableModel(
+    table="{app}_{domain}",
+    columns=(
 {fields}
-    }}
+    ),
+)

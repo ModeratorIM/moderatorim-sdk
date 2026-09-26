@@ -1,4 +1,5 @@
-"""Contract tests for the models domain (Field/FieldType, Model, Extends, ResolvedSchema)."""
+"""Contract tests for the models domain (TableColumn/FieldType, TableModel, Extends,
+ResolvedSchema)."""
 
 from __future__ import annotations
 
@@ -6,51 +7,78 @@ import pytest
 
 from moderatorim.sdk import (
     Extends,
-    Field,
     FieldType,
-    Model,
     ResolvedColumn,
     ResolvedSchema,
+    TableColumn,
+    TableModel,
     enum,
-    list_of,
+    listref,
     ref,
 )
 
 
-def test_field_ref_requires_relation() -> None:
-    with pytest.raises(ValueError, match="REF field requires"):
-        Field(FieldType.REF)
-    assert ref("contact_contact").relation == "contact_contact"
+def test_column_ref_requires_relation() -> None:
+    with pytest.raises(ValueError, match="requires `relation`"):
+        TableColumn(name="c", type=FieldType.REF)
+    assert ref("contact", "contact_contact").relation == "contact_contact"
 
 
-def test_field_enum_and_list_invariants() -> None:
-    assert enum("a", "b").choices == ("a", "b")
-    with pytest.raises(ValueError, match="ENUM field requires"):
-        Field(FieldType.ENUM)
-    assert list_of(FieldType.STR).item_type is FieldType.STR
-    with pytest.raises(ValueError, match="scalar type"):
-        Field(FieldType.LIST, item_type=FieldType.REF)
+def test_listref_requires_relation() -> None:
+    assert listref("recipients", "core_contact").type is FieldType.LISTREF
+    with pytest.raises(ValueError, match="requires `relation`"):
+        TableColumn(name="r", type=FieldType.LISTREF)
+
+
+def test_column_enum_invariants() -> None:
+    assert enum("status", "a", "b").choices == ("a", "b")
+    with pytest.raises(ValueError, match="ENUM column"):
+        TableColumn(name="s", type=FieldType.ENUM)
+
+
+def test_max_length_only_on_text() -> None:
+    assert TableColumn(name="n", type=FieldType.TEXT, max_length=200).max_length == 200
+    with pytest.raises(ValueError, match="max_length"):
+        TableColumn(name="n", type=FieldType.INTEGER, max_length=200)
+
+
+def test_default_type_consistency() -> None:
+    assert TableColumn(name="b", type=FieldType.BOOLEAN, default=False).default is False
+    with pytest.raises(ValueError, match="BOOLEAN"):
+        TableColumn(name="b", type=FieldType.BOOLEAN, default="yes")
+    with pytest.raises(ValueError, match="not in choices"):
+        TableColumn(name="s", type=FieldType.ENUM, choices=("a", "b"), default="c")
 
 
 def test_model_table_must_be_namespaced() -> None:
     with pytest.raises(ValueError, match="app-namespaced"):
-
-        class Bad(Model):
-            table = "contacts"  # no underscore namespace
-
-    class Good(Model):
-        table = "contact_contact"
-        fields = {"name": Field(FieldType.STR)}
-
-    assert Good.table == "contact_contact"
+        TableModel(table="contacts")
+    good = TableModel(
+        table="contact_contact",
+        columns=(TableColumn(name="name", type=FieldType.TEXT),),
+    )
+    assert good.table == "contact_contact"
 
 
-def test_model_reserved_field_rejected() -> None:
+def test_model_reserved_column_rejected() -> None:
     with pytest.raises(ValueError, match="reserved"):
+        TableModel(table="app_thing", columns=(TableColumn(name="id", type=FieldType.TEXT),))
 
-        class Bad(Model):
-            table = "app_thing"
-            fields = {"id": Field(FieldType.STR)}
+
+def test_model_display_cardinality() -> None:
+    with pytest.raises(ValueError, match="display=True"):
+        TableModel(
+            table="app_thing",
+            columns=(
+                TableColumn(name="a", type=FieldType.TEXT, display=True),
+                TableColumn(name="b", type=FieldType.TEXT, display=True),
+            ),
+        )
+
+
+def test_model_role_is_table_acl() -> None:
+    m = TableModel(table="app_thing", role=("app.thing.read",))
+    assert m.role == ("app.thing.read",)
 
 
 def test_extends_validates() -> None:
@@ -63,7 +91,7 @@ def test_extends_validates() -> None:
 def test_resolved_schema_column_names() -> None:
     s = ResolvedSchema(
         table="app_thing",
-        columns=(ResolvedColumn("id", Field(FieldType.STR)),),
+        columns=(ResolvedColumn("id", TableColumn(name="id", type=FieldType.TEXT)),),
         soft_delete=False,
     )
     assert s.column_names() == ("id",)

@@ -22,8 +22,12 @@ from moderatorim.ui.html import Raw, attrs, esc, tag
 from moderatorim.ui.icon import Icon
 from moderatorim.ui.input import Input
 from moderatorim.ui.layout import Grid, Nav, Row
+from moderatorim.ui.pills import Pills
+from moderatorim.ui.render import column_validators, render_column
 from moderatorim.ui.select import Select
 from moderatorim.ui.stepper import Stepper
+from moderatorim.ui.switch import Switch
+from moderatorim.ui.textarea import Textarea
 
 __all__ = [
     # primitives
@@ -46,7 +50,13 @@ __all__ = [
     "Icon",
     "Input",
     "Nav",
+    "Pills",
     "Row",
     "Select",
     "Stepper",
+    "Switch",
+    "Textarea",
+    # model field rendering
+    "render_column",
+    "column_validators",
 ]

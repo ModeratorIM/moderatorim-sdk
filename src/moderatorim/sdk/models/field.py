@@ -1,8 +1,13 @@
-"""Typed model fields — the ``Field`` declaration + the backend-neutral ``FieldType`` vocabulary.
+"""Typed model columns — the ``TableColumn`` declaration + the backend-neutral ``FieldType``
+vocabulary.
 
-A field carries enough type metadata for a relational backend to materialize a column and for a UI
-layer to render an input. Types name intent (``REF``, ``LIST``, ``ENUM``), not a database's column
-types — each backend maps them onto its own storage.
+A column carries enough type metadata for a relational backend to materialize storage and for a UI
+layer to render an input. Types name intent (``REF``, ``LISTREF``, ``ENUM``), not a database's
+column types — each backend maps them onto its own storage.
+
+Naming (three things historically called ``Field``): this module owns the STORAGE column
+(``TableColumn``). The VIEW-field reference (name/order/roles/…) lives in the views layer; the UI
+label-wrapper primitive lives in ``moderatorim.ui.field``.
 """
 
 from __future__ import annotations
@@ -13,71 +18,118 @@ from typing import Any
 
 
 class FieldType(Enum):
-    """The backend-neutral field-type vocabulary."""
+    """The backend-neutral field-type vocabulary. An invalid member fails at import."""
 
-    STR = "str"  # short string (indexable, length-bounded by the backend default)
-    TEXT = "text"  # long / unbounded text
-    INT = "int"
+    TEXT = "text"  # short, indexable string -> VARCHAR (bounded by max_length or backend default)
+    TEXTAREA = "textarea"  # long / unbounded text -> TEXT
+    INTEGER = "integer"
     FLOAT = "float"
-    BOOL = "bool"
-    DATETIME = "datetime"
+    BOOLEAN = "boolean"
     DATE = "date"
-    JSON = "json"  # arbitrary JSON blob
-    ENUM = "enum"  # one of a fixed set of string choices (see Field.choices)
-    REF = "ref"  # reference to another model (see Field.relation -> table name)
-    LIST = "list"  # a list of scalars (e.g. list[str] for phones/tags)
+    DATETIME = "datetime"
+    OBJECT = "object"  # arbitrary JSON blob -> JSONB
+    ENUM = "enum"  # one of a fixed set of string choices (see TableColumn.choices)
+    REF = "ref"  # reference to ONE record (see TableColumn.relation -> table name)
+    LISTREF = "listref"  # list of references (many-to-many) -> auto join table
+
+
+_STRING_TYPES = (FieldType.TEXT, FieldType.TEXTAREA)
+_REF_TYPES = (FieldType.REF, FieldType.LISTREF)
 
 
 @dataclass(frozen=True, slots=True)
-class Field:
-    """A single typed field on a :class:`~moderatorim.sdk.models.Model`.
+class TableColumn:
+    """A single typed column on a :class:`~moderatorim.sdk.models.TableModel`.
 
-    Frozen: a field declaration is immutable. All invariants are checked in ``__post_init__`` so a
+    Flat: type + constraints + presentation are all direct attributes (no nested type object).
+    Frozen: a column declaration is immutable. All invariants are checked in ``__post_init__`` so a
     malformed declaration fails loudly at import/boot, not at schema-materialization time.
     """
 
+    name: str
     type: FieldType
+    label: str = ""
     required: bool = False
     unique: bool = False
-    default: Any = None
-    help: str = ""
     index: bool = False
-    relation: str | None = None  # for REF: the target table name (app-namespaced)
+    default: Any = None
+    relation: str | None = None  # for REF/LISTREF: the target table name (app-namespaced)
     choices: tuple[str, ...] = ()  # for ENUM: the allowed string choices
-    item_type: FieldType | None = None  # for LIST: the element type (a scalar FieldType)
+    max_length: int | None = None  # for TEXT/TEXTAREA: VARCHAR(n), validated on save
+    encrypt: bool = False  # at-rest encryption, store-honored
+    active: bool = True  # shown in the UI (False = hidden from views/forms, NOT dropped)
+    read_only: bool = False  # displayed but not editable
+    display: bool = False  # THIS column is the record's display value (dropdowns / REF pickers)
+    help: str = ""
 
     def __post_init__(self) -> None:
-        if self.type is FieldType.REF and not self.relation:
-            raise ValueError("REF field requires `relation` (the target table name)")
-        if self.type is not FieldType.REF and self.relation is not None:
-            raise ValueError("`relation` is only valid on a REF field")
+        if self.type in _REF_TYPES and not self.relation:
+            raise ValueError(f"{self.type.name} column {self.name!r} requires `relation`")
+        if self.type not in _REF_TYPES and self.relation is not None:
+            raise ValueError(f"`relation` is only valid on a REF/LISTREF column ({self.name!r})")
 
         if self.type is FieldType.ENUM and not self.choices:
-            raise ValueError("ENUM field requires non-empty `choices`")
+            raise ValueError(f"ENUM column {self.name!r} requires non-empty `choices`")
         if self.type is not FieldType.ENUM and self.choices:
-            raise ValueError("`choices` is only valid on an ENUM field")
+            raise ValueError(f"`choices` is only valid on an ENUM column ({self.name!r})")
 
-        if self.type is FieldType.LIST:
-            if self.item_type is None:
-                raise ValueError("LIST field requires `item_type`")
-            if self.item_type in (FieldType.LIST, FieldType.REF, FieldType.JSON):
-                raise ValueError("LIST `item_type` must be a scalar type")
-        elif self.item_type is not None:
-            raise ValueError("`item_type` is only valid on a LIST field")
+        if self.max_length is not None and self.type not in _STRING_TYPES:
+            raise ValueError(f"`max_length` is only valid on TEXT/TEXTAREA ({self.name!r})")
+        if self.max_length is not None and self.max_length <= 0:
+            raise ValueError(f"`max_length` must be positive ({self.name!r})")
 
+        if self.active is False and self.required:
+            raise ValueError(f"column {self.name!r} cannot be both required and active=False")
 
-def ref(table: str, *, required: bool = False, index: bool = True, help: str = "") -> Field:
-    """Convenience constructor for a REF field (relations are indexed by default)."""
-    return Field(FieldType.REF, relation=table, required=required, index=index, help=help)
+        _check_default_type(self)
 
 
-def enum(*choices: str, required: bool = False, default: Any = None, help: str = "") -> Field:
-    """Convenience constructor for an ENUM field."""
-    return Field(
-        FieldType.ENUM, choices=tuple(choices), required=required, default=default, help=help
+def _check_default_type(col: TableColumn) -> None:
+    """Validate `default` is consistent with the column's type (skip None — 'no default')."""
+    d = col.default
+    if d is None:
+        return
+    t = col.type
+    if t is FieldType.BOOLEAN and not isinstance(d, bool):
+        raise ValueError(f"BOOLEAN column {col.name!r} default must be a bool, got {d!r}")
+    if t is FieldType.INTEGER and (isinstance(d, bool) or not isinstance(d, int)):
+        raise ValueError(f"INTEGER column {col.name!r} default must be an int, got {d!r}")
+    if t is FieldType.FLOAT and (isinstance(d, bool) or not isinstance(d, int | float)):
+        raise ValueError(f"FLOAT column {col.name!r} default must be a number, got {d!r}")
+    if t in _STRING_TYPES and not isinstance(d, str):
+        raise ValueError(f"{t.name} column {col.name!r} default must be a str, got {d!r}")
+    if t is FieldType.ENUM and d not in col.choices:
+        raise ValueError(f"ENUM column {col.name!r} default {d!r} not in choices {col.choices}")
+
+
+def text(name: str, *, required: bool = False, unique: bool = False, **kw: Any) -> TableColumn:
+    """Convenience constructor for a short TEXT column."""
+    return TableColumn(name=name, type=FieldType.TEXT, required=required, unique=unique, **kw)
+
+
+def ref(
+    name: str, table: str, *, required: bool = False, index: bool = True, **kw: Any
+) -> TableColumn:
+    """Convenience constructor for a REF column (relations are indexed by default)."""
+    return TableColumn(
+        name=name, type=FieldType.REF, relation=table, required=required, index=index, **kw
     )
 
 
-def list_of(item: FieldType, *, help: str = "") -> Field:
-    """Convenience constructor for a LIST field of a scalar ``item`` type."""
-    return Field(FieldType.LIST, item_type=item, default=(), help=help)
+def listref(name: str, table: str, **kw: Any) -> TableColumn:
+    """Convenience constructor for a LISTREF column (many-to-many, join-backed, pill widget)."""
+    return TableColumn(name=name, type=FieldType.LISTREF, relation=table, **kw)
+
+
+def enum(
+    name: str, *choices: str, required: bool = False, default: Any = None, **kw: Any
+) -> TableColumn:
+    """Convenience constructor for an ENUM column."""
+    return TableColumn(
+        name=name,
+        type=FieldType.ENUM,
+        choices=tuple(choices),
+        required=required,
+        default=default,
+        **kw,
+    )

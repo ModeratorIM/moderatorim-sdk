@@ -9,13 +9,12 @@ SDK surface, never core.
 
 from __future__ import annotations
 
-import builtins
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from moderatorim.sdk.models import Extends, Model
+from moderatorim.sdk.models import Extends, TableModel
 
 
 class UnitType(Enum):
@@ -69,9 +68,7 @@ class Manifest:
     display_name: str = ""
     dependency: tuple[str, ...] = ()
     provides: tuple[str, ...] = ()
-    # ``builtins.type`` (not bare ``type``): the ``type`` FIELD above shadows the builtin under
-    # string-evaluated annotations, so we qualify it to reach the real builtin.
-    models: tuple[builtins.type[Model], ...] = ()
+    models: tuple[TableModel, ...] = ()
     extends: tuple[Extends, ...] = ()
     store_metadata: dict[str, Any] = field(default_factory=dict)
     nav: tuple[NavEntry, ...] = ()

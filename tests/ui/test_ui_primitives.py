@@ -32,9 +32,15 @@ EXPECTED_PUBLIC_API = {
     "Icon",
     "Input",
     "Nav",
+    "Pills",
     "Row",
     "Select",
     "Stepper",
+    "Switch",
+    "Textarea",
+    # model field rendering
+    "render_column",
+    "column_validators",
 }
 
 
