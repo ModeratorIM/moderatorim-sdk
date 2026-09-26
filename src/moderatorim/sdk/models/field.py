@@ -94,7 +94,7 @@ def _check_default_type(col: TableColumn) -> None:
         raise ValueError(f"BOOLEAN column {col.name!r} default must be a bool, got {d!r}")
     if t is FieldType.INTEGER and (isinstance(d, bool) or not isinstance(d, int)):
         raise ValueError(f"INTEGER column {col.name!r} default must be an int, got {d!r}")
-    if t is FieldType.FLOAT and (isinstance(d, bool) or not isinstance(d, (int, float))):
+    if t is FieldType.FLOAT and (isinstance(d, bool) or not isinstance(d, int | float)):
         raise ValueError(f"FLOAT column {col.name!r} default must be a number, got {d!r}")
     if t in _STRING_TYPES and not isinstance(d, str):
         raise ValueError(f"{t.name} column {col.name!r} default must be a str, got {d!r}")
