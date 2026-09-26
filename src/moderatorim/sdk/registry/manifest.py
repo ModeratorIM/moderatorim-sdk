@@ -79,6 +79,15 @@ class Manifest:
     # one of the app's pages is served (served from /static/apps/{name}/<file>). App-owned theming:
     # the app declares + ships the CSS; core serves it and links it. e.g. ("admin.css",).
     styles: tuple[str, ...] = ()
+    # JavaScript filenames the app ships in its static dir, injected as <script type="module"> by
+    # core when one of the app's pages is served (served from /static/apps/{name}/<file>), mirroring
+    # ``styles``. App-GATED: injected ONLY while the app's pages are showing (not globally), so one
+    # app's JS cannot run against another app. Because the shell is swapped by htmx on navigation,
+    # the script re-executes on each in-app swap — so app JS MUST be swap-safe: bind DELEGATED
+    # handlers on ``document`` and (re)apply stateful DOM on ``htmx:afterSettle``, never assume a
+    # one-shot DOMContentLoaded. The app declares + ships the JS; core serves + links it.
+    # e.g. ("admin.js",).
+    scripts: tuple[str, ...] = ()
     permissions: tuple[str, ...] = ()
     # Roles this unit declares (seeded into the core RBAC catalog at boot): {role_name: (grants,)}.
     # Renamed from `default_roles` — the seeding-default semantics live in the docs, not the field.
