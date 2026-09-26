@@ -58,6 +58,8 @@ class Ctx:
 
     - ``config`` / ``user`` / ``store`` / ``request`` — runtime handles core injects.
     - ``can``   — a ``can(permission)->bool`` read gate for the current user.
+    - ``has_role`` — a ``has_role(name)->bool`` gate for the current user (declared-role names);
+                  a super_user holds every role. Used to gate role-gated views/fields.
     - ``authz`` — the RBAC management handle (for apps that MANAGE permissions, e.g. admin), so apps
                   never import AuthzService.
     - session/cookie mutations are recorded and applied by the adapter.
@@ -68,6 +70,7 @@ class Ctx:
     user: Any | None = None
     store: DataStore | None = None
     can: Callable[[str], bool] = field(default=lambda _p: False)
+    has_role: Callable[[str], bool] = field(default=lambda _r: False)
     authz: Any | None = None
     _set_session: str | None = field(default=None, repr=False)
     _clear_session: bool = field(default=False, repr=False)
