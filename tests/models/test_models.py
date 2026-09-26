@@ -52,23 +52,23 @@ def test_default_type_consistency() -> None:
 
 def test_model_table_must_be_namespaced() -> None:
     with pytest.raises(ValueError, match="app-namespaced"):
-        TableModel(table="contacts")
+        TableModel(name="contacts")
     good = TableModel(
-        table="contact_contact",
+        name="contact_contact",
         columns=(TableColumn(name="name", type=FieldType.TEXT),),
     )
-    assert good.table == "contact_contact"
+    assert good.name == "contact_contact"
 
 
 def test_model_reserved_column_rejected() -> None:
     with pytest.raises(ValueError, match="reserved"):
-        TableModel(table="app_thing", columns=(TableColumn(name="id", type=FieldType.TEXT),))
+        TableModel(name="app_thing", columns=(TableColumn(name="id", type=FieldType.TEXT),))
 
 
 def test_model_display_cardinality() -> None:
     with pytest.raises(ValueError, match="display=True"):
         TableModel(
-            table="app_thing",
+            name="app_thing",
             columns=(
                 TableColumn(name="a", type=FieldType.TEXT, display=True),
                 TableColumn(name="b", type=FieldType.TEXT, display=True),
@@ -77,7 +77,7 @@ def test_model_display_cardinality() -> None:
 
 
 def test_model_role_is_table_acl() -> None:
-    m = TableModel(table="app_thing", role=("app.thing.read",))
+    m = TableModel(name="app_thing", role=("app.thing.read",))
     assert m.role == ("app.thing.read",)
 
 

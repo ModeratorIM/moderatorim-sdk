@@ -1,8 +1,8 @@
 """The ``TableModel`` declaration — an app declares a model as an INSTANCE (not a subclass),
-setting ``table``, ``columns``, and an optional table-ACL ``role``.
+setting ``name``, ``columns``, and an optional table-ACL ``role``.
 
 A model is a *declaration*, not an ORM row: it describes a schema. The core provisions it through
-the ``DataStore`` port; table names are app-namespaced to prevent collisions between apps.
+the ``DataStore`` port; model names are app-namespaced to prevent collisions between apps.
 """
 
 from __future__ import annotations
@@ -20,42 +20,53 @@ SOFT_DELETE_FIELD = "deleted_at"
 class TableModel:
     """A declared model.
 
-      * ``table`` — the FULL physical table name, prefixed with the owning unit's name
+      * ``name`` — the model's identity AND its physical table name, prefixed with the owning unit
         (``<unit>_<name>``, lowercase snake_case, e.g. ``admin_post``). You DECLARE the full name —
-        the framework does NOT generate or rewrite it. Core validates at boot that the prefix
-        matches the owning unit (``boot.py`` §6) and FAILS LOUDLY otherwise.
+        the framework does NOT generate or rewrite it. It is what ``Extends.base`` references, and
+        what the backend provisions. Core validates at boot that the prefix matches the owning unit
+        (``boot.py`` §6) and FAILS LOUDLY otherwise.
+      * ``label`` — the human display name for the model (e.g. ``Users``), used by the views layer
+        for page titles / nav. Defaults to a title-cased derivation of ``name`` when omitted.
       * ``columns`` — an ordered tuple of :class:`~moderatorim.sdk.models.field.TableColumn`.
       * ``role`` — the TABLE ACL gate (moderatorim-table-acl): an empty tuple = open (governed only
-        by the caller's route role); a role tuple gates CRUD in the ``DataStore`` for every caller
-        (a per-operation form is allowed later). Enforced in the store, unbypassable.
+        by the caller's route role); a role tuple gates CRUD in the ``DataStore`` for every caller.
+        Enforced in the store, unbypassable.
       * ``soft_delete`` — if True (default), ``DataStore.delete`` is a soft delete.
 
     Column names ``id`` and ``deleted_at`` are reserved (managed by the core/backend).
     """
 
-    table: str
+    name: str
+    label: str = ""
     columns: tuple[TableColumn, ...] = ()
     role: tuple[str, ...] = ()
     soft_delete: bool = True
 
     def __post_init__(self) -> None:
-        _validate_table_name(self.table)
+        _validate_name(self.name)
         _validate_columns(self.columns)
 
     @property
     def column_map(self) -> dict[str, TableColumn]:
         return {c.name: c for c in self.columns}
 
+    @property
+    def display_label(self) -> str:
+        """The human label, deriving one from ``name`` when ``label`` was not set."""
+        if self.label:
+            return self.label
+        # core_user -> "User"; strip the leading unit prefix, title-case the rest.
+        tail = self.name.split("_", 1)[-1] if "_" in self.name else self.name
+        return tail.replace("_", " ").title()
 
-def _validate_table_name(table: str) -> None:
-    if not table:
-        raise ValueError("TableModel.table must be a non-empty string")
-    if not table.islower() or " " in table:
-        raise ValueError(f"TableModel.table must be lowercase snake_case: {table!r}")
-    if "_" not in table:
-        raise ValueError(
-            f"TableModel.table must be app-namespaced as '<app>_<name>' (got {table!r})"
-        )
+
+def _validate_name(name: str) -> None:
+    if not name:
+        raise ValueError("TableModel.name must be a non-empty string")
+    if not name.islower() or " " in name:
+        raise ValueError(f"TableModel.name must be lowercase snake_case: {name!r}")
+    if "_" not in name:
+        raise ValueError(f"TableModel.name must be app-namespaced as '<app>_<name>' (got {name!r})")
 
 
 def _validate_columns(columns: tuple[TableColumn, ...]) -> None:
