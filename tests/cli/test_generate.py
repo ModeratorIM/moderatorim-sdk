@@ -40,10 +40,11 @@ def test_generate_model_writes_domain_package_and_registers(tmp_path: Path) -> N
     model = app / "users" / "model.py"
     assert model.is_file()
     body = model.read_text()
-    assert 'table = "shop_users"' in body
-    assert "class Users(Model):" in body
-    assert '"email": Field(FieldType.STR),' in body
-    assert '"age": Field(FieldType.INT),' in body
+    assert 'table = "shop_users"' not in body  # no longer subclass form
+    assert "Users = TableModel(" in body
+    assert 'table="shop_users"' in body
+    assert 'TableColumn(name="email", type=FieldType.TEXT),' in body
+    assert 'TableColumn(name="age", type=FieldType.INTEGER),' in body
     # registered in the manifest's models=(...)
     manifest = (app / "manifest.py").read_text()
     assert "from shop.users.model import Users" in manifest
@@ -103,7 +104,6 @@ def test_generated_app_imports_as_package_with_registered_models(tmp_path: Path)
         mod = importlib.import_module("shop")
         m = mod.manifest
         assert m.name == "shop"
-        assert [c.__name__ for c in m.models] == ["Products"]
         assert [c.table for c in m.models] == ["shop_products"]
     finally:
         sys.path.remove(str(tmp_path))

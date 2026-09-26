@@ -31,14 +31,15 @@ from moderatorim.sdk.models import (
     ID_FIELD,
     SOFT_DELETE_FIELD,
     Extends,
-    Field,
     FieldType,
-    Model,
     ResolvedColumn,
     ResolvedSchema,
+    TableColumn,
+    TableModel,
     enum,
-    list_of,
+    listref,
     ref,
+    text,
 )
 from moderatorim.sdk.registry import (
     Manifest,
@@ -76,8 +77,8 @@ from moderatorim.sdk.web import (
 
 __all__ = [
     # models
-    "Model",
-    "Field",
+    "TableModel",
+    "TableColumn",
     "FieldType",
     "Extends",
     "ResolvedColumn",
@@ -86,7 +87,8 @@ __all__ = [
     "SOFT_DELETE_FIELD",
     "ref",
     "enum",
-    "list_of",
+    "listref",
+    "text",
     # datastore port
     "DataStore",
     "Filter",

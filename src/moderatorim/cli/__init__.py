@@ -68,23 +68,28 @@ _DOMAIN_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
 def _parse_fields(raw: list[str] | None) -> str:
-    """Render --field name:type args into the model fields body. Defaults to one STR field."""
+    """Render --field name:type args into the model columns body. Defaults to one TEXT column."""
     _TYPE_MAP = {
-        "str": "STR",
-        "int": "INT",
-        "bool": "BOOL",
-        "float": "FLOAT",
+        "str": "TEXT",
         "text": "TEXT",
+        "textarea": "TEXTAREA",
+        "int": "INTEGER",
+        "integer": "INTEGER",
+        "bool": "BOOLEAN",
+        "boolean": "BOOLEAN",
+        "float": "FLOAT",
+        "date": "DATE",
         "datetime": "DATETIME",
+        "object": "OBJECT",
     }
     entries: list[tuple[str, str]] = []
     for spec in raw or []:
         fname, _, ftype = spec.partition(":")
-        ft = _TYPE_MAP.get(ftype.lower().strip(), "STR")
+        ft = _TYPE_MAP.get(ftype.lower().strip(), "TEXT")
         entries.append((fname.strip(), ft))
     if not entries:
-        entries = [("name", "STR")]
-    return "\n".join(f'        "{n}": Field(FieldType.{t}),' for n, t in entries)
+        entries = [("name", "TEXT")]
+    return "\n".join(f'        TableColumn(name="{n}", type=FieldType.{t}),' for n, t in entries)
 
 
 def _generate(args: argparse.Namespace) -> int:

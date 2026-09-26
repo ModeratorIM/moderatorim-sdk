@@ -19,8 +19,8 @@ import moderatorim.sdk
 # The frozen public surface. Update DELIBERATELY, alongside a version bump + CHANGELOG entry.
 EXPECTED_PUBLIC_API = {
     # models
-    "Model",
-    "Field",
+    "TableModel",
+    "TableColumn",
     "FieldType",
     "Extends",
     "ResolvedColumn",
@@ -29,7 +29,8 @@ EXPECTED_PUBLIC_API = {
     "SOFT_DELETE_FIELD",
     "ref",
     "enum",
-    "list_of",
+    "listref",
+    "text",
     # datastore port
     "DataStore",
     "Filter",

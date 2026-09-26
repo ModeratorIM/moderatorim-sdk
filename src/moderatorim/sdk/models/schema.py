@@ -8,15 +8,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from moderatorim.sdk.models.field import Field
+from moderatorim.sdk.models.field import TableColumn
 
 
 @dataclass(frozen=True, slots=True)
 class ResolvedColumn:
-    """One column in a resolved schema — a field plus its final name."""
+    """One column in a resolved schema — a column plus its final name."""
 
     name: str
-    field: Field
+    field: TableColumn
 
 
 @dataclass(frozen=True, slots=True)
